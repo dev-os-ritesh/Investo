@@ -8,25 +8,25 @@ function Stats() {
           <h1 className="fs-2 mb-5">Trust with confidence</h1>
           <h2 className="fs-4">Customer-first always</h2>
           <p className="text-muted">
-            That's why 1.3+ crore customers trust Zerodha with ₹3.5+ lakh crores
-            worth of equity investments.
+            Investo is a learning-focused trading platform built to explore how modern
+            investment applications work. It is designed as a hands-on project to
+            understand real-world product flows and system architecture.
           </p>
-          <h2 className="fs-4">No spam or gimmicks</h2>
+
+          <h2 className="fs-4">The Investo ecosystem</h2>
           <p className="text-muted">
-            No gimmicks, spam, "gamification", or annoying push notifications.
-            High quality apps that you use at your pace, the way you like.
+            Investo is more than a single screen—it represents an end-to-end full-stack
+            implementation, covering frontend, backend APIs, and database integration
+            to simulate a real-world platform.
           </p>
-          <h2 className="fs-4">The Zerodha universe</h2>
+
+          <h2 className="fs-4">Learn to manage money better</h2>
           <p className="text-muted">
-            Not just an app, but a whole ecosystem. Our investments in 30+
-            fintech startups offer you tailored services specific to your needs.
+            Through simulated features and controlled workflows, Investo helps users
+            understand investing concepts, risk awareness, and responsible decision
+            making in a practical environment.
           </p>
-          <h2 className="fs-4">Do better with money</h2>
-          <p className="text-muted">
-            With initiatives like Nudge and Kill Switch, we don't just
-            facilitate transactions, but actively help you do better with your
-            money.
-          </p>
+
         </div>
         <div className="col-6 p-5">
           <img src="media/images/ecosystem.png" style={{ width: "90%" }} />

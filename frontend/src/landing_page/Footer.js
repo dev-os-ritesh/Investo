@@ -6,9 +6,9 @@ function Footer() {
       <div className="container border-top mt-5">
         <div className="row mt-5">
           <div className="col">
-            <img src="media/images/logo.svg" style={{ width: "50%" }} />
+            <img src="media/images/investo.png" style={{ width: "50%" }} />
             <p>
-              &copy; 2010 - 2024, Not Zerodha Broking Ltd. All rights reserved.
+              &copy; 2025-2030, Investo Broking Ltd. All rights reserved.
             </p>
           </div>
           <div className="col">
@@ -23,11 +23,11 @@ function Footer() {
             <br />
             <a href="">Careers</a>
             <br />
-            <a href="">Zerodha.tech</a>
+            <a href="">Investo.tech</a>
             <br />
             <a href="">Press & media</a>
             <br />
-            <a href="">Zerodha cares (CSR)</a>
+            <a href="">Investo cares (CSR)</a>
             <br />
           </div>
           <div className="col">
@@ -36,7 +36,7 @@ function Footer() {
             <br />
             <a href="">Support portal</a>
             <br />
-            <a href="">Z-Connect blog</a>
+            <a href="">i-Connect blog</a>
             <br />
             <a href="">List of charges</a>
             <br />
@@ -54,50 +54,33 @@ function Footer() {
           </div>
         </div>
         <div className="mt-5 text-muted" style={{ fontSize: "14px" }}>
-          <p>
-            Zerodha Broking Ltd.: Member of NSE​ &​ BSE – SEBI Registration no.:
-            INZ000031633 CDSL: Depository services through Zerodha Securities
-            Pvt. Ltd. – SEBI Registration no.: IN-DP-100-2015 Commodity Trading
-            through Zerodha Commodities Pvt. Ltd. MCX: 46025 – SEBI Registration
-            no.: INZ000038238 Registered Address: Zerodha Broking Ltd.,
-            #153/154, 4th Cross, Dollars Colony, Opp. Clarence Public School,
-            J.P Nagar 4th Phase, Bengaluru - 560078, Karnataka, India. For any
-            complaints pertaining to securities broking please write to
-            complaints@zerodha.com, for DP related to dp@zerodha.com. Please
-            ensure you carefully read the Risk Disclosure Document as prescribed
-            by SEBI | ICF
-          </p>
+        <p>
+          Investo is a self-built educational project created to understand how a
+          modern trading and investment platform works. This application is developed
+          solely for learning and hands-on practice purposes, including frontend,
+          backend, and database integration. Investo is not a registered broker, does
+          not provide real trading services, and is not affiliated with NSE, BSE, SEBI,
+          or any other financial institution.
+        </p>
 
-          <p>
-            Procedure to file a complaint on SEBI SCORES: Register on SCORES
-            portal. Mandatory details for filing complaints on SCORES: Name,
-            PAN, Address, Mobile Number, E-mail ID. Benefits: Effective
-            Communication, Speedy redressal of the grievances
-          </p>
+        <p>
+          No real money transactions are supported on this platform. All data shown
+          within the application is either mock, simulated, or used for demonstration
+          purposes only.
+        </p>
 
-          <p>
-            Investments in securities market are subject to market risks; read
-            all the related documents carefully before investing.
-          </p>
+        <p>
+          Investments in the securities market are subject to market risks. This
+          project does not offer investment advice, stock tips, or portfolio
+          management services.
+        </p>
 
-          <p>
-            "Prevent unauthorised transactions in your account. Update your
-            mobile numbers/email IDs with your stock brokers. Receive
-            information of your transactions directly from Exchange on your
-            mobile/email at the end of the day. Issued in the interest of
-            investors. KYC is one time exercise while dealing in securities
-            markets - once KYC is done through a SEBI registered intermediary
-            (broker, DP, Mutual Fund etc.), you need not undergo the same
-            process again when you approach another intermediary." Dear
-            Investor, if you are subscribing to an IPO, there is no need to
-            issue a cheque. Please write the Bank account number and sign the
-            IPO application form to authorize your bank to make payment in case
-            of allotment. In case of non allotment the funds will remain in your
-            bank account. As a business we don't give stock tips, and have not
-            authorized anyone to trade on behalf of others. If you find anyone
-            claiming to be part of Zerodha and offering such services, please
-            create a ticket here.
-          </p>
+        <p>
+          This project is independently developed by the creator for educational
+          purposes. Any resemblance to real trading platforms is purely coincidental.
+          Users are advised to use this application only for learning and practice.
+        </p>
+
         </div>
       </div>
     </footer>
