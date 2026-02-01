@@ -35,6 +35,7 @@ dashboard page:
 <img width="957" height="472" alt="image" src="https://github.com/user-attachments/assets/4889b522-c9d6-41c2-9619-88f4f1c6ff0a" />
 
 Signup page:
+![image alt] (https://github.com/dev-os-ritesh/Investo/blob/b1f307ecb8ad853258f1ea5d039acb2ae700a120/Screenshot%202026-02-01%20155638.png)
 
 loginpage:
 
