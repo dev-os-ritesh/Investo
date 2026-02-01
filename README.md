@@ -29,7 +29,7 @@ The project focuses on **real-world project structure, API integration, and prod
 
 ## Screenshots
 landing page:
-![image alt] (https://github.com/dev-os-ritesh/Investo/blob/a786bdc9a6fcf969400ecf7837bed5054ab8dc59/Screenshot%202026-02-01%20154553.png)
+![image alt](https://github.com/dev-os-ritesh/Investo/blob/a786bdc9a6fcf969400ecf7837bed5054ab8dc59/Screenshot%202026-02-01%20154553.png)
 
 dashboard page:
 <img width="957" height="472" alt="image" src="https://github.com/user-attachments/assets/4889b522-c9d6-41c2-9619-88f4f1c6ff0a" />
