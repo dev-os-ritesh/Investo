@@ -1,3 +1,7 @@
+/**
+ * Main Express Application Entry Point
+ * This file sets up the server, connects to MongoDB, and defines all API routes.
+ */
 require ("dotenv").config();
 const express=require("express");
 const mongoose=require ("mongoose");
@@ -6,11 +10,11 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 
 const PORT=process.env.PORT || 3002;
+// Default JWT Secret used for signing and verifying tokens
 const JWT_SECRET = process.env.JWT_SECRET || 'investo_super_secret_key';
 
-
+// Import Mongoose models for interacting with the database
 const { HoldingsModel } = require("./model/HoldingsModel");
-
 const { PositionsModel } = require("./model/PositionsModel");
 const { OrdersModel } = require("./model/OrdersModel");
 const { UserModel } = require("./model/UserModel");
@@ -18,10 +22,11 @@ const { UserModel } = require("./model/UserModel");
 const uri=process.env.MONGO_URL;
 const app=express();
 
-
-app.use(cors());
-app.use(bodyParser.json());
+// Middleware Setup
+app.use(cors()); // Allow cross-origin requests from the React frontend
+app.use(bodyParser.json()); // Parse incoming JSON requests
 app.use(express.json());
+
 
 // app.get("/addHoldings", async (req, res) => {
 //   let tempHoldings = [
@@ -192,6 +197,8 @@ app.use(express.json());
 //   res.send("Done!");
 // });
 // Middleware to verify JWT token
+// This intercepts requests to protected routes, checks the Authorization header,
+// and decodes the token to identify the logged-in user.
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -199,19 +206,30 @@ const authenticateToken = (req, res, next) => {
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) return res.status(403).json({ error: "Invalid or expired token" });
-    req.user = user;
-    next();
+    req.user = user; // Attach the decoded user payload to the request object
+    next(); // Proceed to the next middleware or route handler
   });
 };
 
+/**
+ * --- DATA FETCHING ROUTES ---
+ * These routes return the user's portfolio data.
+ * They are protected by the authenticateToken middleware.
+ */
+
+// Fetch all current stock holdings
 app.get("/allHoldings", authenticateToken, async (req, res) => {
   let allHoldings = await HoldingsModel.find({});
   res.json(allHoldings);
 });
+
+// Fetch all intraday/CNC positions
 app.get("/allPositions", authenticateToken, async (req, res) => {
   let allPositions = await PositionsModel.find({});
   res.json(allPositions);
 });
+
+// Fetch the history of all placed orders
 app.get("/allOrders", authenticateToken, async (req, res) => {
   try {
     let allOrders = await OrdersModel.find({});
@@ -221,6 +239,11 @@ app.get("/allOrders", authenticateToken, async (req, res) => {
   }
 });
 
+/**
+ * --- AUTHENTICATION ROUTES ---
+ */
+
+// User Registration endpoint
 app.post("/signup", async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
@@ -228,17 +251,23 @@ app.post("/signup", async (req, res) => {
       return res.status(400).json({ error: "Email and password are required" });
     }
     const lowerEmail = email.toLowerCase();
+    
+    // Check if the user already exists in the database
     const existingUser = await UserModel.findOne({ email: lowerEmail });
     if (existingUser) {
       return res.status(400).json({ error: "User already exists" });
     }
+    
+    // Create and save the new user
     const newUser = new UserModel({
       name,
       email: lowerEmail,
       phone,
-      password
+      password // Note: In a production app, passwords should be hashed (e.g. using bcrypt)
     });
     await newUser.save();
+    
+    // Generate an auth token for the new user
     const token = jwt.sign({ email: lowerEmail }, JWT_SECRET, { expiresIn: '24h' });
     res.status(201).json({ success: true, message: "Signup successful", token });
   } catch (error) {
@@ -246,6 +275,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+// User Login endpoint
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -253,10 +283,14 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Email and password are required" });
     }
     const lowerEmail = email.toLowerCase();
+    
+    // Find the user with matching email and password
     const user = await UserModel.findOne({ email: lowerEmail, password });
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
+    
+    // Generate the JWT auth token
     const token = jwt.sign({ email: lowerEmail }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ success: true, email: user.email, name: user.name, token });
   } catch (error) {
@@ -341,6 +375,11 @@ app.post("/user/toggle-app", authenticateToken, async (req, res) => {
   }
 });
 
+/**
+ * --- ORDER EXECUTION ---
+ * This is the core logic for placing buy/sell orders.
+ * It dynamically updates the user's Positions and Holdings based on the trade.
+ */
 app.post("/newOrder", authenticateToken, async (req, res) => {
   try {
     console.log("REQ BODY:", req.body);
@@ -349,15 +388,17 @@ app.post("/newOrder", authenticateToken, async (req, res) => {
       return res.status(400).json({ error: "Body missing or empty" });
     }
 
+    // Step 1: Save the order record to history
     const newOrder = new OrdersModel(req.body);
     await newOrder.save();
 
-    // Dynamically update positions
+    // Step 2: Dynamically update the user's active Positions
     const { name, qty: orderQty, price: orderPrice, mode } = req.body;
     let position = await PositionsModel.findOne({ name });
 
     if (mode === "BUY") {
       if (position) {
+        // If position already exists, average out the new buy price and add quantities
         const oldQty = position.qty || 0;
         const oldAvg = position.avg || 0;
         const newQty = oldQty + Number(orderQty);
@@ -369,14 +410,16 @@ app.post("/newOrder", authenticateToken, async (req, res) => {
 
         position.qty = newQty;
         position.avg = newAvg;
-        position.price = Number(orderPrice);
+        position.price = Number(orderPrice); // Update latest traded price
         
+        // Calculate if the position is currently in loss
         const curValue = position.price * position.qty;
         const isProfit = curValue - position.avg * position.qty >= 0.0;
         position.isLoss = !isProfit;
 
         await position.save();
       } else {
+        // Create a new position record if none exists
         const newPos = new PositionsModel({
           product: "CNC",
           name,
@@ -391,10 +434,12 @@ app.post("/newOrder", authenticateToken, async (req, res) => {
       }
     } else if (mode === "SELL") {
       if (position) {
+        // Reduce quantity upon selling
         const oldQty = position.qty || 0;
         const newQty = oldQty - Number(orderQty);
 
         if (newQty === 0) {
+          // If all shares sold, remove position
           await PositionsModel.deleteOne({ name });
         } else {
           position.qty = newQty;
@@ -405,6 +450,7 @@ app.post("/newOrder", authenticateToken, async (req, res) => {
           await position.save();
         }
       } else {
+        // If selling without prior position, it's a short sell (negative qty)
         const newPos = new PositionsModel({
           product: "CNC",
           name,
@@ -419,7 +465,8 @@ app.post("/newOrder", authenticateToken, async (req, res) => {
       }
     }
 
-    // Dynamically update holdings
+    // Step 3: Dynamically update long-term Holdings
+    // The logic is similar to Positions but tracks long-term investments
     let holding = await HoldingsModel.findOne({ name });
     if (mode === "BUY") {
       if (holding) {

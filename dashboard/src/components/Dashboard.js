@@ -1,3 +1,20 @@
+/**
+ * Dashboard.js - Main Content Layout
+ *
+ * This component defines the two-panel layout of the main dashboard area:
+ *   LEFT:  <WatchList /> - a persistent sidebar showing live prices for tracked stocks.
+ *   RIGHT: <Routes />    - the main content area, which swaps views based on the URL path.
+ *
+ * Sub-routes (all nested under the Home "/" wildcard route):
+ *   /           -> <Summary />   - Portfolio overview with P&L summary and charts
+ *   /orders     -> <Orders />    - History of all past BUY/SELL orders
+ *   /holdings   -> <Holdings />  - Long-term stock holdings
+ *   /positions  -> <Positions /> - Currently open/active trading positions
+ *   /funds      -> <Funds />     - Account funds management (add/withdraw)
+ *   /apps       -> <Apps />      - Third-party app integrations directory
+ *
+ * Navigation between these views is handled by the <Menu /> component inside <TopBar />.
+ */
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
@@ -13,7 +30,9 @@ import WatchList from "./WatchList";
 const Dashboard = () => {
   return (
     <div className="dashboard-container">
+      {/* Persistent left sidebar showing live stock prices */}
       <WatchList />
+      {/* Main content area - renders different components based on the URL */}
       <div className="content">
         <Routes>
           <Route exact path="/" element={<Summary />} />
@@ -28,4 +47,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Dashboard;
