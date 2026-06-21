@@ -74,7 +74,7 @@ Investo
 
 ### Landing Page
 
-![Landing Page](./screenshots/landing-page.png)
+![Landing Page](Screenshot 2026-02-01 154553.png)
 
 ### Dashboard
 
