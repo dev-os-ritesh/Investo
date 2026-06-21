@@ -1,42 +1,147 @@
-# 📈 Investo – Full Stack Trading Platform
+# 📈 Investo — Full-Stack MERN Trading Platform
 
-Investo is a **full-stack MERN trading platform**. 
-It includes a landing website, a trading dashboard, and a Node.js backend that serves everything from a **single server**.
+A modern trading platform inspired by Zerodha, built with the MERN stack. Investo provides a complete stock trading experience with secure authentication, portfolio management, order execution, and real-time analytics.
 
-The project focuses on **real-world project structure, API integration, and production-style setup**.
+### 🚀 Live Demo
 
----
+🌐 Frontend: https://investo-five-dusky.vercel.app
 
-## ✨ Features
+📊 Dashboard: https://investo-elih.vercel.app
 
-- Landing website (Home, Pricing, Support)
-- Trading dashboard (Holdings, Positions, Orders, Watchlist)
-- Express + MongoDB backend APIs
-- Single-server setup:
-  - Landing at `/`
-  - Dashboard at `/app`
+⚙️ Backend API: https://investo-f19p.onrender.com
 
 ---
 
-## 🛠 Tech Stack
+## ✨ Key Features
 
-- Frontend: React  
-- Dashboard: React, Axios, Chart.js  
-- Backend: Node.js, Express.js  
-- Database: MongoDB Atlas  
+### 🔐 Authentication & Security
+
+* JWT-based authentication
+* Secure password hashing
+* Protected dashboard routes
+* Role-based API access
+
+### 📊 Trading Dashboard
+
+* Interactive watchlist
+* Buy & Sell order management
+* Holdings & Positions tracking
+* Portfolio analytics with Chart.js
+* Funds and margin monitoring
+
+### 🌐 Modern Landing Website
+
+* Responsive design
+* Product showcase
+* Pricing pages
+* Support portal
+* Authentication workflows
+
+### ⚡ Backend API
+
+* Express.js REST APIs
+* MongoDB Atlas integration
+* JWT authorization
+* Order management system
+* Secure CORS configuration
 
 ---
 
-## Screenshots
-landing page:
-![image alt](https://github.com/dev-os-ritesh/Investo/blob/a786bdc9a6fcf969400ecf7837bed5054ab8dc59/Screenshot%202026-02-01%20154553.png)
+## 🛠️ Tech Stack
 
-dashboard page:
-<img width="957" height="472" alt="image" src="https://github.com/user-attachments/assets/4889b522-c9d6-41c2-9619-88f4f1c6ff0a" />
+| Category       | Technologies                  |
+| -------------- | ----------------------------- |
+| Frontend       | React 19, React Router, Axios |
+| Dashboard      | React, Chart.js, Material UI  |
+| Backend        | Node.js, Express.js           |
+| Database       | MongoDB Atlas, Mongoose       |
+| Authentication | JWT, bcrypt                   |
+| Deployment     | Vercel, Render                |
 
-Signup page:
-![image alt](https://github.com/dev-os-ritesh/Investo/blob/b1f307ecb8ad853258f1ea5d039acb2ae700a120/Screenshot%202026-02-01%20155638.png)
+---
 
-loginpage:
-![image alt](https://github.com/dev-os-ritesh/Investo/blob/6b43429a3774c7f8162d0035df7b8ea9cf5c0488/Screenshot%202026-02-01%20160508.png)
+## 📂 Project Structure
+
+```text
+Investo
+├── Backend
+├── frontend
+├── dashboard
+└── README.md
+```
+
+## 📸 Screenshots
+
+### Landing Page
+
+(Add screenshot here)
+
+### Dashboard
+
+(Add screenshot here)
+
+### Login Page
+
+(Add screenshot here)
+
+---
+
+## ⚙️ Local Setup
+
+```bash
+git clone https://github.com/dev-os-ritesh/Investo.git
+cd Investo
+```
+
+### Backend
+
+```bash
+cd Backend
+npm install
+npm run dev
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+### Dashboard
+
+```bash
+cd dashboard
+npm install
+npm start
+```
+
+---
+
+## 🎯 Future Improvements
+
+* Real-time stock data integration
+* WebSocket-powered live updates
+* Advanced portfolio analytics
+* AI-powered investment insights
+* Mobile application
+
+---
+
+## 👨‍💻 Author
+
+**Ritesh Ranbaware**
+
+Third Year Information Technology Student
+
+MERN Stack Developer
+
+GitHub: https://github.com/dev-os-ritesh
+
+LinkedIn: Add your LinkedIn profile
+
+---
+
+⭐ If you like this project, consider giving it a star.
 
