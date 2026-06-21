@@ -72,21 +72,32 @@ Investo
 
 ## 📸 Screenshots
 
+## 📸 Screenshots
+
 ### 🌐 Landing Page
 
-![Landing Page](./Screenshot%202026-02-01%20154553.png)
+<p align="center">
+  <img src="./Screenshot%202026-02-01%20154553.png" alt="Landing Page" width="700">
+</p>
 
 ### 📊 Dashboard
 
-![Dashboard](./Screenshot%202026-02-01%20154644.png)
+<p align="center">
+  <img src="./Screenshot%202026-02-01%20154644.png" alt="Dashboard" width="700">
+</p>
 
-### 📝 Signup Page
+### 🔐 Authentication
 
-![Signup](./Screenshot%202026-02-01%20155638.png)
+<p align="center">
+  <img src="./Screenshot%202026-02-01%20155638.png" alt="Signup Page" width="45%">
+  <img src="./Screenshot%202026-02-01%20160508.png" alt="Login Page" width="45%">
+</p>
 
-### 🔐 Login Page
+<p align="center">
+  <b>Signup Page</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <b>Login Page</b>
+</p>
 
-![Login](./Screenshot%202026-02-01%20160508.png)
 ---
 
 ## ⚙️ Local Setup
