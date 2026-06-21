@@ -72,18 +72,21 @@ Investo
 
 ## 📸 Screenshots
 
-### Landing Page
+### 🌐 Landing Page
 
-![Landing Page](Screenshot 2026-02-01 154553.png)
+![Landing Page](./Screenshot%202026-02-01%20154553.png)
 
-### Dashboard
+### 📊 Dashboard
 
-(Add screenshot here)
+![Dashboard](./Screenshot%202026-02-01%20154644.png)
 
-### Login Page
+### 📝 Signup Page
 
-(Add screenshot here)
+![Signup](./Screenshot%202026-02-01%20155638.png)
 
+### 🔐 Login Page
+
+![Login](./Screenshot%202026-02-01%20160508.png)
 ---
 
 ## ⚙️ Local Setup
