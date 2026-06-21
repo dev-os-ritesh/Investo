@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import axios from "axios";
@@ -7,27 +7,47 @@ import GeneralContext from "./GeneralContext";
 
 import "./BuyActionWindow.css";
 
-const BuyActionWindow = ({ uid }) => {
+const BuyActionWindow = ({ uid, mode }) => {
+  const { stockPrices, closeBuyWindow, updateMarginOnOrder } = useContext(GeneralContext);
   const [stockQuantity, setStockQuantity] = useState(1);
   const [stockPrice, setStockPrice] = useState(0.0);
 
+  useEffect(() => {
+    if (uid && stockPrices[uid]) {
+      setStockPrice(stockPrices[uid]);
+    }
+  }, [uid]);
+
   const handleBuyClick = () => {
-    axios.post("http://localhost:3002/newOrder", {
+    const cost = Number(stockQuantity) * Number(stockPrice);
+    const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3002";
+    axios.post(`${apiUrl}/newOrder`, {
       name: uid,
-      qty: stockQuantity,
-      price: stockPrice,
-      mode: "BUY",
+      qty: Number(stockQuantity),
+      price: Number(stockPrice),
+      mode: mode,
+    }).then(() => {
+      if (updateMarginOnOrder) {
+        updateMarginOnOrder(cost, mode);
+      }
+      // Trigger a window reload or trigger a reload event for data components
+      window.dispatchEvent(new Event("orderPlaced"));
     });
 
-    GeneralContext.closeBuyWindow();
+    closeBuyWindow();
   };
 
   const handleCancelClick = () => {
-    GeneralContext.closeBuyWindow();
+    closeBuyWindow();
   };
 
   return (
-    <div className="container" id="buy-window" draggable="true">
+    <div className="container" id="buy-window" draggable="true" style={{ height: "auto", paddingBottom: "20px" }}>
+      <div className="header" style={{ backgroundColor: mode === "BUY" ? "#4184f3" : "#ff5722", padding: "16px", color: "#fff" }}>
+        <h3 style={{ margin: 0, fontSize: "1.1rem" }}>{mode === "BUY" ? "Buy" : "Sell"} {uid}</h3>
+        <span style={{ fontSize: "0.8rem" }}>LTP: ₹{(stockPrices[uid] || stockPrice || 0).toFixed(2)}</span>
+      </div>
+
       <div className="regular-order">
         <div className="inputs">
           <fieldset>
@@ -36,6 +56,7 @@ const BuyActionWindow = ({ uid }) => {
               type="number"
               name="qty"
               id="qty"
+              min="1"
               onChange={(e) => setStockQuantity(e.target.value)}
               value={stockQuantity}
             />
@@ -55,14 +76,22 @@ const BuyActionWindow = ({ uid }) => {
       </div>
 
       <div className="buttons">
-        <span>Margin required ₹140.65</span>
+        <span>Margin required ₹{(stockQuantity * stockPrice).toFixed(2)}</span>
         <div>
-          <Link className="btn btn-blue" onClick={handleBuyClick}>
-            Buy
-          </Link>
-          <Link to="" className="btn btn-grey" onClick={handleCancelClick}>
+          <button
+            className="btn"
+            style={{ backgroundColor: mode === "BUY" ? "#4184f3" : "#ff5722", border: "none", cursor: "pointer" }}
+            onClick={handleBuyClick}
+          >
+            {mode === "BUY" ? "Buy" : "Sell"}
+          </button>
+          <button
+            className="btn btn-grey"
+            style={{ border: "none", cursor: "pointer" }}
+            onClick={handleCancelClick}
+          >
             Cancel
-          </Link>
+          </button>
         </div>
       </div>
     </div>

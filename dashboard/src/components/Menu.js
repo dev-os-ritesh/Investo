@@ -1,21 +1,22 @@
-import React, { useState } from "react";
-
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useLocation } from "react-router-dom";
+import GeneralContext from "./GeneralContext";
 
 const Menu = () => {
-  const [selectedMenu, setSelectedMenu] = useState(0);
+  const { userEmail, logout } = useContext(GeneralContext);
+  const location = useLocation();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
-  const handleMenuClick = (index) => {
-    setSelectedMenu(index);
-  };
-
-  const handleProfileClick = (index) => {
+  const handleProfileClick = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
 
-  const menuClass = "menu";
-  const activeMenuClass = "menu selected";
+  const getMenuClass = (path) => {
+    return location.pathname === path ? "menu selected" : "menu";
+  };
+
+  const username = userEmail ? userEmail.split("@")[0].toUpperCase() : "USER";
+  const avatar = username.substring(0, 2);
 
   return (
     <div className="menu-container">
@@ -23,76 +24,52 @@ const Menu = () => {
       <div className="menus">
         <ul>
           <li>
-            <Link
-              style={{ textDecoration: "none" }}
-              to="/"
-              onClick={() => handleMenuClick(0)}
-            >
-              <p className={selectedMenu === 0 ? activeMenuClass : menuClass}>
-                Dashboard
-              </p>
+            <Link style={{ textDecoration: "none" }} to="/">
+              <p className={getMenuClass("/")}>Dashboard</p>
             </Link>
           </li>
           <li>
-            <Link
-              style={{ textDecoration: "none" }}
-              to="/orders"
-              onClick={() => handleMenuClick(1)}
-            >
-              <p className={selectedMenu === 1 ? activeMenuClass : menuClass}>
-                Orders
-              </p>
+            <Link style={{ textDecoration: "none" }} to="/orders">
+              <p className={getMenuClass("/orders")}>Orders</p>
             </Link>
           </li>
           <li>
-            <Link
-              style={{ textDecoration: "none" }}
-              to="/holdings"
-              onClick={() => handleMenuClick(2)}
-            >
-              <p className={selectedMenu === 2 ? activeMenuClass : menuClass}>
-                Holdings
-              </p>
+            <Link style={{ textDecoration: "none" }} to="/holdings">
+              <p className={getMenuClass("/holdings")}>Holdings</p>
             </Link>
           </li>
           <li>
-            <Link
-              style={{ textDecoration: "none" }}
-              to="/positions"
-              onClick={() => handleMenuClick(3)}
-            >
-              <p className={selectedMenu === 3 ? activeMenuClass : menuClass}>
-                Positions
-              </p>
+            <Link style={{ textDecoration: "none" }} to="/positions">
+              <p className={getMenuClass("/positions")}>Positions</p>
             </Link>
           </li>
           <li>
-            <Link
-              style={{ textDecoration: "none" }}
-              to="funds"
-              onClick={() => handleMenuClick(4)}
-            >
-              <p className={selectedMenu === 4 ? activeMenuClass : menuClass}>
-                Funds
-              </p>
+            <Link style={{ textDecoration: "none" }} to="/funds">
+              <p className={getMenuClass("/funds")}>Funds</p>
             </Link>
           </li>
           <li>
-            <Link
-              style={{ textDecoration: "none" }}
-              to="/apps"
-              onClick={() => handleMenuClick(6)}
-            >
-              <p className={selectedMenu === 6 ? activeMenuClass : menuClass}>
-                Apps
-              </p>
+            <Link style={{ textDecoration: "none" }} to="/apps">
+              <p className={getMenuClass("/apps")}>Apps</p>
             </Link>
           </li>
         </ul>
         <hr />
-        <div className="profile" onClick={handleProfileClick}>
-          <div className="avatar">ZU</div>
-          <p className="username">USERID</p>
+        <div className="profile-wrapper">
+          <div className="profile" onClick={handleProfileClick}>
+            <div className="avatar">{avatar}</div>
+            <p className="username">{username}</p>
+          </div>
+          {isProfileDropdownOpen && (
+            <div className="profile-dropdown">
+              <p className="label">Account</p>
+              <p className="email">{userEmail}</p>
+              <hr style={{ margin: "10px 0", borderTop: "1px solid #eee" }} />
+              <p className="logout-btn" onClick={logout}>
+                Logout
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

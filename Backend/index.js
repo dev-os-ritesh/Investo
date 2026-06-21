@@ -1,17 +1,19 @@
 require ("dotenv").config();
 const express=require("express");
-
 const mongoose=require ("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 
 const PORT=process.env.PORT || 3002;
+const JWT_SECRET = process.env.JWT_SECRET || 'investo_super_secret_key';
 
 
 const { HoldingsModel } = require("./model/HoldingsModel");
 
 const { PositionsModel } = require("./model/PositionsModel");
 const { OrdersModel } = require("./model/OrdersModel");
+const { UserModel } = require("./model/UserModel");
 
 const uri=process.env.MONGO_URL;
 const app=express();
@@ -189,18 +191,157 @@ app.use(express.json());
 //   });
 //   res.send("Done!");
 // });
+// Middleware to verify JWT token
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (token == null) return res.status(401).json({ error: "No token provided" });
 
-app.get("/allHoldings", async (req, res) => {
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ error: "Invalid or expired token" });
+    req.user = user;
+    next();
+  });
+};
+
+app.get("/allHoldings", authenticateToken, async (req, res) => {
   let allHoldings = await HoldingsModel.find({});
   res.json(allHoldings);
 });
-
-app.get("/allPositions", async (req, res) => {
+app.get("/allPositions", authenticateToken, async (req, res) => {
   let allPositions = await PositionsModel.find({});
   res.json(allPositions);
 });
+app.get("/allOrders", authenticateToken, async (req, res) => {
+  try {
+    let allOrders = await OrdersModel.find({});
+    res.json(allOrders);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
-app.post("/newOrder", async (req, res) => {
+app.post("/signup", async (req, res) => {
+  try {
+    const { name, email, phone, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+    const lowerEmail = email.toLowerCase();
+    const existingUser = await UserModel.findOne({ email: lowerEmail });
+    if (existingUser) {
+      return res.status(400).json({ error: "User already exists" });
+    }
+    const newUser = new UserModel({
+      name,
+      email: lowerEmail,
+      phone,
+      password
+    });
+    await newUser.save();
+    const token = jwt.sign({ email: lowerEmail }, JWT_SECRET, { expiresIn: '24h' });
+    res.status(201).json({ success: true, message: "Signup successful", token });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+    const lowerEmail = email.toLowerCase();
+    const user = await UserModel.findOne({ email: lowerEmail, password });
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+    const token = jwt.sign({ email: lowerEmail }, JWT_SECRET, { expiresIn: '24h' });
+    res.json({ success: true, email: user.email, name: user.name, token });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/user", authenticateToken, async (req, res) => {
+  try {
+    const email = req.user.email;
+    let user = await UserModel.findOne({ email });
+    if (!user) {
+      user = new UserModel({
+        email,
+        password: "defaultpassword",
+        availableMargin: 4043.10,
+        usedMargin: 3757.30,
+        openingBalance: 4043.10,
+        commodityRequested: false,
+        activeApps: []
+      });
+      await user.save();
+    }
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/user/update-margin", authenticateToken, async (req, res) => {
+  try {
+    const { availableMargin, usedMargin, openingBalance } = req.body;
+    const email = req.user.email;
+    let user = await UserModel.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    if (availableMargin !== undefined) user.availableMargin = Number(availableMargin);
+    if (usedMargin !== undefined) user.usedMargin = Number(usedMargin);
+    if (openingBalance !== undefined) user.openingBalance = Number(openingBalance);
+    await user.save();
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/user/update-commodity", authenticateToken, async (req, res) => {
+  try {
+    const { commodityRequested } = req.body;
+    const email = req.user.email;
+    let user = await UserModel.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    user.commodityRequested = Boolean(commodityRequested);
+    await user.save();
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/user/toggle-app", authenticateToken, async (req, res) => {
+  try {
+    const { appName } = req.body;
+    const email = req.user.email;
+    let user = await UserModel.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const index = user.activeApps.indexOf(appName);
+    if (index > -1) {
+      user.activeApps.splice(index, 1);
+    } else {
+      user.activeApps.push(appName);
+    }
+    await user.save();
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/newOrder", authenticateToken, async (req, res) => {
   try {
     console.log("REQ BODY:", req.body);
 
@@ -210,6 +351,113 @@ app.post("/newOrder", async (req, res) => {
 
     const newOrder = new OrdersModel(req.body);
     await newOrder.save();
+
+    // Dynamically update positions
+    const { name, qty: orderQty, price: orderPrice, mode } = req.body;
+    let position = await PositionsModel.findOne({ name });
+
+    if (mode === "BUY") {
+      if (position) {
+        const oldQty = position.qty || 0;
+        const oldAvg = position.avg || 0;
+        const newQty = oldQty + Number(orderQty);
+        
+        let newAvg = oldAvg;
+        if (newQty > 0) {
+          newAvg = ((oldQty * oldAvg) + (Number(orderQty) * Number(orderPrice))) / newQty;
+        }
+
+        position.qty = newQty;
+        position.avg = newAvg;
+        position.price = Number(orderPrice);
+        
+        const curValue = position.price * position.qty;
+        const isProfit = curValue - position.avg * position.qty >= 0.0;
+        position.isLoss = !isProfit;
+
+        await position.save();
+      } else {
+        const newPos = new PositionsModel({
+          product: "CNC",
+          name,
+          qty: Number(orderQty),
+          avg: Number(orderPrice),
+          price: Number(orderPrice),
+          net: "+0.00%",
+          day: "+0.00%",
+          isLoss: false,
+        });
+        await newPos.save();
+      }
+    } else if (mode === "SELL") {
+      if (position) {
+        const oldQty = position.qty || 0;
+        const newQty = oldQty - Number(orderQty);
+
+        if (newQty === 0) {
+          await PositionsModel.deleteOne({ name });
+        } else {
+          position.qty = newQty;
+          position.price = Number(orderPrice);
+          const curValue = position.price * position.qty;
+          const isProfit = curValue - position.avg * position.qty >= 0.0;
+          position.isLoss = !isProfit;
+          await position.save();
+        }
+      } else {
+        const newPos = new PositionsModel({
+          product: "CNC",
+          name,
+          qty: -Number(orderQty),
+          avg: Number(orderPrice),
+          price: Number(orderPrice),
+          net: "+0.00%",
+          day: "+0.00%",
+          isLoss: false,
+        });
+        await newPos.save();
+      }
+    }
+
+    // Dynamically update holdings
+    let holding = await HoldingsModel.findOne({ name });
+    if (mode === "BUY") {
+      if (holding) {
+        const oldQty = holding.qty || 0;
+        const oldAvg = holding.avg || 0;
+        const newQty = oldQty + Number(orderQty);
+        let newAvg = oldAvg;
+        if (newQty > 0) {
+          newAvg = ((oldQty * oldAvg) + (Number(orderQty) * Number(orderPrice))) / newQty;
+        }
+        holding.qty = newQty;
+        holding.avg = newAvg;
+        holding.price = Number(orderPrice);
+        await holding.save();
+      } else {
+        const newHolding = new HoldingsModel({
+          name,
+          qty: Number(orderQty),
+          avg: Number(orderPrice),
+          price: Number(orderPrice),
+          net: "+0.00%",
+          day: "+0.00%"
+        });
+        await newHolding.save();
+      }
+    } else if (mode === "SELL") {
+      if (holding) {
+        const oldQty = holding.qty || 0;
+        const newQty = oldQty - Number(orderQty);
+        if (newQty <= 0) {
+          await HoldingsModel.deleteOne({ name });
+        } else {
+          holding.qty = newQty;
+          holding.price = Number(orderPrice);
+          await holding.save();
+        }
+      }
+    }
 
     res.status(201).json({ message: "Order saved!" });
   } catch (error) {

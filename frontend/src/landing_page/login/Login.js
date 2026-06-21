@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Login.css";
 
 function Login() {
@@ -16,16 +17,15 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    console.log("Login data:", form);
-
-    // For now just do front-end login check
-    if (form.email && form.password) {
-      alert("Login Successful!");
-      navigate("/dashboard"); // redirect to dashboard page
-    } else {
-      alert("Invalid login details");
-    }
+    const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3002";
+    axios.post(`${apiUrl}/login`, form)
+      .then((res) => {
+        const dashboardUrl = process.env.REACT_APP_DASHBOARD_URL || `http://localhost:${window.location.port === "3000" ? "3001" : "3000"}`;
+        window.location.href = `${dashboardUrl}/?token=` + res.data.token;
+      })
+      .catch((err) => {
+        alert(err.response?.data?.error || "Login Failed!");
+      });
   };
 
   return (

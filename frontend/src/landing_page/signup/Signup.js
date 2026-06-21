@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Signup.css"
-
+import axios from "axios";
+import "./Signup.css";
 
 function Signup() {
-  const navigate =useNavigate;
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -18,9 +18,15 @@ function Signup() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form submitted:", form);
-    alert("Signup Successful!");
-    navigate("/login");
+    const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3002";
+    axios.post(`${apiUrl}/signup`, form)
+      .then((res) => {
+        alert("Signup Successful!");
+        navigate("/login");
+      })
+      .catch((err) => {
+        alert(err.response?.data?.error || "Signup Failed!");
+      });
   };
 
   return (
